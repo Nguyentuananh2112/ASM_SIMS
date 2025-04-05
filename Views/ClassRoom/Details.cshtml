@@ -1,0 +1,81 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model ASM_SIMS.Models.ClassRoomViewModel
+@using ASM_SIMS.Models
+@{
+    ViewData["Title"] = "Class Room Details";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    var students = ViewBag.Students as List<StudentViewModel>;
+    var courseName = ViewBag.CourseName;
+    var teacherName = ViewBag.TeacherName;
+}
+
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <h2>Class Room Details</h2>
+        <a class="btn btn-info" asp-action="Index">Back</a>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Class Details</h5>
+                <dl class="row">
+                    <dt class="col-sm-2">Class Name</dt>
+                    <dd class="col-sm-10">@Model.ClassName</dd>
+                    <dt class="col-sm-2">Course</dt>
+                    <dd class="col-sm-10">@courseName</dd>
+                    <dt class="col-sm-2">Teacher</dt>
+                    <dd class="col-sm-10">@teacherName</dd>
+                    <dt class="col-sm-2">Start Date</dt>
+                    <dd class="col-sm-10">@Model.StartDate</dd>
+                    <dt class="col-sm-2">End Date</dt>
+                    <dd class="col-sm-10">@Model.EndDate</dd>
+                    <dt class="col-sm-2">Schedule</dt>
+                    <dd class="col-sm-10">@Model.Schedule</dd>
+                    <dt class="col-sm-2">Location</dt>
+                    <dd class="col-sm-10">@Model.Location</dd>
+                    <dt class="col-sm-2">Status</dt>
+                    <dd class="col-sm-10">@Model.Status</dd>
+                </dl>
+                <a class="btn btn-primary" asp-action="AddStudentToClass" asp-route-classRoomId="@Model.Id">Edit Student</a>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Students</h5>
+                @if (students == null || !students.Any())
+                {
+                    <p class="text-info">No students in this class.</p>
+                }
+                else
+                {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var student in students)
+                            {
+                                <tr>
+                                    <td>@student.Id</td>
+                                    <td>@student.FullName</td>
+                                    <td>@student.Email</td>
+                                    <td>@student.Phone</td>
+                                    <td>@student.Address</td>
+                                    <td>@student.Status</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>

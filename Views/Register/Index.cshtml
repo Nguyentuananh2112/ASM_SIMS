@@ -1,0 +1,72 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model ASM_SIMS.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-12 col-md-8 mx-auto">
+        <h2>Register New Account</h2>
+        <div class="card">
+            <div class="card-body">
+                @if (TempData["MessageRegister"] != null)
+                {
+                    <div class="alert alert-success">@TempData["MessageRegister"]</div>
+                }
+                <form method="post" asp-controller="Register" asp-action="Index">
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label">Username</label>
+                        <input class="form-control" asp-for="Username" placeholder="Enter your username" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input class="form-control" type="email" asp-for="Email" placeholder="Enter your email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label">Password</label>
+                        <input class="form-control" type="password" asp-for="Password" placeholder="Enter your password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                        <input class="form-control" type="password" asp-for="ConfirmPassword" placeholder="Confirm your password" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Phone" class="form-label">Phone</label>
+                        <input class="form-control" asp-for="Phone" placeholder="Enter your phone" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label">Address (Optional)</label>
+                        <input class="form-control" asp-for="Address" placeholder="Enter your address" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Role" class="form-label">Role</label>
+                        <select class="form-control" asp-for="Role">
+                            <option value="">-- Select Role --</option>
+                            <option value="Student">Student</option>
+                            <option value="Teacher">Teacher</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-danger"></span>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                        <a class="btn btn-secondary" asp-controller="Login" asp-action="Index">Back to Login</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

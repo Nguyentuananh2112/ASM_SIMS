@@ -1,0 +1,66 @@
+﻿@model List<ASM_SIMS.Models.StudentViewModel>
+@using ASM_SIMS.DB
+@{
+    ViewData["Title"] = "Students";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    bool statusSave = TempData["save"] != null && Convert.ToBoolean(TempData["save"]);
+    var classRooms = ViewBag.ClassRooms as List<ClassRoom>;
+    var courses = ViewBag.Courses as List<Courses>;
+}
+
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <h2>List Students</h2>
+        <a class="btn btn-primary" asp-action="Create">Add Student</a>
+
+        @if (TempData["save"] != null)
+        {
+            if (statusSave)
+            {
+                <div class="text-success my-2">Operation successful</div>
+            }
+            else
+            {
+                <div class="text-danger my-2">Operation fail</div>
+            }
+        }
+
+        <table class="table my-2">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Address</th>
+                    <th>Class</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var classRoom = classRooms?.FirstOrDefault(c => c.Id == item.ClassRoomId);
+                    var course = courses?.FirstOrDefault(c => c.Id == item.CourseId);
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.FullName</td>
+                        <td>@item.Email</td>
+                        <td>@item.Phone</td>
+                        <td>@item.Address</td>
+                        <td>@(classRoom?.ClassName ?? "Not assigned yet")</td>
+                        <td>@(course?.NameCourse ?? "Not assigned yet")</td>
+                        <td>@item.Status</td>
+                        <td>
+                            <a class="btn btn-info" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure wanna delete student ?');">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

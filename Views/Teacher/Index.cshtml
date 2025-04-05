@@ -1,0 +1,61 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<ASM_SIMS.Models.TeacherViewModel>
+@{
+    ViewData["Title"] = "Teachers";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    bool statusSave = TempData["save"] != null && Convert.ToBoolean(TempData["save"]);
+}
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <h2>List Teachers</h2>
+        <a class="btn btn-primary" asp-action="Create">Add Teacher</a>
+
+        @if (TempData["save"] != null)
+        {
+            if (statusSave)
+            {
+                <div class="text-success my-2">Operation successful</div>
+            }
+            else
+            {
+                <div class="text-danger my-2">Operation Fail</div>
+            }
+        }
+
+        <table class="table my-2">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Full Number</th>
+                    <th>Address</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.FullName</td>
+                        <td>@item.Email</td>
+                        <td>@item.Phone</td>
+                        <td>@item.Address</td>
+                        <td>@item.Status</td>
+                        <td>
+                            <a class="btn btn-info" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

@@ -1,0 +1,74 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model ASM_SIMS.Models.CategoryDetail
+@{
+    ViewData["Title"] = "Edit Category";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <h2>Edit Category</h2>
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="mb-3">
+                        <label asp-for="NameCategory" class="form-label">Name</label>
+                        <input class="form-control" asp-for="NameCategory" />
+                        <span asp-validation-for="NameCategory" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description</label>
+                        <textarea class="form-control" asp-for="Description" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Current Avatar</label>
+                        @if (!string.IsNullOrEmpty(Model.Avartar))
+                        {
+                            <img src="~/SIMS/uploads/images/@Model.Avartar" alt="@Model.NameCategory" width="100" />
+                        }
+                        else
+                        {
+                            <p>No avatar uploaded</p>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Upload New Avatar (Optional)</label>
+                        <input type="file" name="ViewAvatar" class="form-control" />
+                        <small class="form-text text-muted">Leave blank to keep the current avatar.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Status" class="form-label">Status</label>
+                        <select class="form-control" asp-for="Status">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <a class="btn btn-secondary" asp-action="Index">Back to List</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        @if (TempData["save"] != null)
+        {
+            if ((bool)TempData["save"])
+            {
+                <div class="text-success my-2">Category updated successfully</div>
+            }
+            else
+            {
+                <div class="text-danger my-2">Failed to update category</div>
+            }
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

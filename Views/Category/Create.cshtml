@@ -1,0 +1,43 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@model ASM_SIMS.Models.CategoryDetail
+
+@{
+    ViewData["title"] = "Create Category";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <h2>Create Category</h2>
+        <a class="btn btn-info" href="@Url.Action("Index", "Category")">Back</a>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Create Category</h5>
+                <form method="post" enctype="multipart/form-data" asp-controller="Category" asp-action="Create">
+                    <div class="mb-3">
+                        <label asp-for="NameCategory">Name</label>
+                        <input asp-for="NameCategory" class="form-control" type="text"/>
+                        <span asp-validation-for="NameCategory" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="8"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ViewAvatar">Avatar</label>
+                        <input asp-for="ViewAvatar" class="form-control" type="file" />
+                        <span asp-validation-for="ViewAvatar" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

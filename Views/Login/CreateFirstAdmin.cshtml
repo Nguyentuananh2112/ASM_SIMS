@@ -1,0 +1,56 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model ASM_SIMS.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Create First Admin";
+    Layout = "~/Views/Shared/_LayoutSignInSignUp.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-12 col-md-8 mx-auto">
+        <h2>Create First Admin Account</h2>
+        <div class="card">
+            <div class="card-body">
+                <p class="text-muted">This is the first account (Admin) for the system.</p>
+                <form method="post" asp-controller="Login" asp-action="CreateFirstAdmin">
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label">Username</label>
+                        <input class="form-control" asp-for="Username" placeholder="Enter your username" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input class="form-control" type="email" asp-for="Email" placeholder="Enter your email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label">Password</label>
+                        <input class="form-control" type="password" asp-for="Password" placeholder="Enter your password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                        <input class="form-control" type="password" asp-for="ConfirmPassword" placeholder="Confirm your password" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Phone" class="form-label">Phone</label>
+                        <input class="form-control" asp-for="Phone" placeholder="Enter your phone" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label">Address (Optional)</label>
+                        <input class="form-control" asp-for="Address" placeholder="Enter your address" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Create Admin</button>
+                        <a class="btn btn-secondary" asp-action="Index">Back to Login</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

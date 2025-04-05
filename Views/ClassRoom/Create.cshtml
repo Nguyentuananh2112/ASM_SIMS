@@ -1,0 +1,83 @@
+﻿@model ASM_SIMS.Models.ClassRoomViewModel
+@using ASM_SIMS.DB
+@{
+    ViewData["Title"] = "Create Class Room";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    var courses = ViewBag.Courses as List<Courses>;
+    var teachers = ViewBag.Teachers as List<Teacher>;
+}
+
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <h2>Add Class</h2>
+        <a class="btn btn-info" href="@Url.Action("Index", "ClassRoom")">Back</a>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Add Class Room</h5>
+                
+                <form method="post" asp-controller="ClassRoom" asp-action="Create">
+                    <div class="mb-3">
+                        <label asp-for="ClassName">Class Name</label>
+                        <input asp-for="ClassName" class="form-control" type="text" />
+                        <span asp-validation-for="ClassName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CourseId">Course</label>
+                        <select asp-for="CourseId" class="form-control" asp-items="@(new SelectList(courses, "Id", "NameCourse"))">
+                            <option value="">Select Course</option>
+                        </select>
+                        <span asp-validation-for="CourseId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TeacherId">Teacher</label>
+                        <select asp-for="TeacherId" class="form-control" asp-items="@(new SelectList(teachers, "Id", "FullName"))">
+                            <option value="">Select Student</option>
+                        </select>
+                        <span asp-validation-for="TeacherId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="StartDate">Start Date</label>
+                        <input asp-for="StartDate" class="form-control" type="date" value="@DateOnly.FromDateTime(DateTime.Now).ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="EndDate">End Date</label>
+                        <input asp-for="EndDate" class="form-control" type="date" value="@DateOnly.FromDateTime(DateTime.Now).ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="EndDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Schedule">Class schedule</label>
+                        <input asp-for="Schedule" class="form-control" type="text" placeholder="Example: Monday, 8:00 AM - 10:00 AM" />
+                        <span asp-validation-for="Schedule" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Location">Address</label>
+                        <input asp-for="Location" class="form-control" type="text" />
+                        <span asp-validation-for="Location" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Status">Status</label>
+                        <select asp-for="Status" class="form-control">
+                            <option value="">Select Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

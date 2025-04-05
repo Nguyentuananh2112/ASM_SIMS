@@ -1,0 +1,68 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model ASM_SIMS.Models.CategoryViewModel
+@{
+    ViewData["title"] = "Categories";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    bool statusSave = Convert.ToBoolean(TempData["save"]);
+}
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <h2>This is Category Page</h2>
+        <a class="btn btn-primary" href="@Url.Action("Create", "Category")">Add Category</a>
+        @if(TempData["save"] != null)
+        {
+            @if (statusSave)
+            {
+                <div class="text-success">
+                    Create Category Success
+                </div>
+            }
+            else
+            {
+                <div class="text-danger my-2">
+                    Create Category Fail
+                </div>
+            }
+        }
+
+        <table class="table my-2">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Avatar</th>
+                    <th>Actions</th>
+                    <th>Created at</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.categoryList)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.NameCategory</td>
+                        <td>@item.Description</td>
+                        <td>
+                            <img class="img-fluid" src="~/SIMS/uploads/images/@item.Avartar" alt="@item.NameCategory" width="100" height="150" />
+                        </td>
+                        
+                        <td>@item.Status</td>
+                        <td>@item.CreatedAt</td>
+                        @* <td>@item.UpdatedAt</td> *@
+                        <td>
+                            <a class="btn btn-info" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        
+    </div>
+</div>

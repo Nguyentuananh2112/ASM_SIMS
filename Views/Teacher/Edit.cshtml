@@ -1,0 +1,69 @@
+﻿@model ASM_SIMS.Models.TeacherViewModel
+@using ASM_SIMS.DB
+@{
+    ViewData["Title"] = "Edit Teacher";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    var courses = ViewBag.Courses as List<Courses>; // Ép kiểu ViewBag.Courses thành List<Courses>
+}
+
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <h2>Edit Teacher</h2>
+        <a class="btn btn-info" asp-action="Index">Back</a>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <form method="post" asp-action="Edit">
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label">Full Name</label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Phone" class="form-label">Phone Number</label>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label">Address</label>
+                        <input asp-for="Address" class="form-control" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CourseId" class="form-label">Course</label>
+                        <select asp-for="CourseId" class="form-control" asp-items="@(new SelectList(ViewBag.Courses, "Id", "NameCourse", Model.CourseId))">
+                            <option value="">-- choose teaching subjects --</option>
+                        </select>
+                        <span asp-validation-for="CourseId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Status" class="form-label">Status</label>
+                        <select asp-for="Status" class="form-control" asp-items="@(new SelectList(new[] { "Active", "Inactive" }, Model.Status))">
+                            <option value="">-- choose status --</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

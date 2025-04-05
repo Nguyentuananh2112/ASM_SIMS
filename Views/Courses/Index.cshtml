@@ -1,0 +1,69 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model ASM_SIMS.Models.CourseViewModel
+@{
+    ViewData["title"] = "Courses";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    bool statusSave = Convert.ToBoolean(TempData["save"]);
+}
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <h2>This is Courses Page</h2>
+        <a class="btn btn-primary" href="@Url.Action("Create", "Courses")">Add Course</a>
+        @if (TempData["save"] != null)
+        {
+            @if (statusSave)
+            {
+                <div class="text-success">
+                    Create Course Success
+                </div>
+            }
+            else
+            {
+                <div class="text-danger my-2">
+                    Create Course Fail
+                </div>
+            }
+        }
+
+        <table class="table my-2">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Category Name</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+
+                    <th>Vote</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.courseList)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.NameCourse</td>
+                        <td>@item.Description</td>
+                        <td>@item.CategoryName</td>
+                        <td>@item.StartDate.ToString("yyyy-MM-dd")</td>
+                        <td>@item.EndDate.ToString("yyyy-MM-dd")</td>
+
+                        <td>@item.Vote</td>
+                        <td>@item.Status</td>
+                        <td>@item.CreatedAt</td>
+                        <td>
+                            <a class="btn btn-info" href="@Url.Action("Edit", "Courses", new { id = item.Id })">Edit</a>
+                            <a class="btn btn-danger" href="@Url.Action("Delete", "Courses", new { id = item.Id })">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

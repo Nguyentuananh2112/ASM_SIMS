@@ -1,0 +1,78 @@
+﻿@model ASM_SIMS.Models.AssignStudentsViewModel
+@using ASM_SIMS.DB
+@{
+    ViewData["Title"] = "Assign Students to Class";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <h2>Assign Students to Class: @Model.ClassRoomName</h2>
+        <a class="btn btn-info" asp-action="Details" asp-route-id="@Model.ClassRoomId">Back</a>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Assign Students</h5>
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="text-danger">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <p>@error.ErrorMessage</p>
+                        }
+                    </div>
+                }
+                <form method="post" asp-action="AddStudentToClass">
+                    <input type="hidden" asp-for="ClassRoomId" />
+                    <input type="hidden" asp-for="ClassRoomName" />
+                    @if (!Model.Students.Any())
+                    {
+                        <p class="text-info">No students available to assign.</p>
+                    }
+                    else
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Select</th>
+                                    <th>ID</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Students.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" asp-for="Students[i].IsSelected" />
+                                            <input type="hidden" asp-for="Students[i].Id" />
+                                            <input type="hidden" asp-for="Students[i].FullName" />
+                                            <input type="hidden" asp-for="Students[i].Email" />
+                                            <input type="hidden" asp-for="Students[i].Phone" />
+                                            <input type="hidden" asp-for="Students[i].Address" />
+                                            <input type="hidden" asp-for="Students[i].Status" />
+                                            <input type="hidden" asp-for="Students[i].ClassRoomId" />
+                                            <input type="hidden" asp-for="Students[i].CourseId" />
+                                            <input type="hidden" asp-for="Students[i].AccountId" />
+                                        </td>
+                                        <td>@Model.Students[i].Id</td>
+                                        <td>@Model.Students[i].FullName</td>
+                                        <td>@Model.Students[i].Email</td>
+                                        <td>@Model.Students[i].Phone</td>
+                                        <td>@Model.Students[i].Status</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">Assign Students</button>
+                        </div>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

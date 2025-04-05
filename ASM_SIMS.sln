@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASM_SIMS", "ASM_SIMS.csproj", "{9A38E48A-42BB-44CC-A68F-EF21AA2101AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIMS.Tests", "..\SIMS.Tests\SIMS.Tests.csproj", "{5CC72E16-7F9A-4F49-9B7F-63158A8CCB6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{9A38E48A-42BB-44CC-A68F-EF21AA2101AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A38E48A-42BB-44CC-A68F-EF21AA2101AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A38E48A-42BB-44CC-A68F-EF21AA2101AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CC72E16-7F9A-4F49-9B7F-63158A8CCB6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CC72E16-7F9A-4F49-9B7F-63158A8CCB6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CC72E16-7F9A-4F49-9B7F-63158A8CCB6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CC72E16-7F9A-4F49-9B7F-63158A8CCB6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
