@@ -11,7 +11,7 @@ namespace ASM_SIMS.Controllers
 
         public RegisterController(SimsDataContext dbContext)
         {
-            _dbContext = dbContext;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
         // GET: Hiển thị trang đăng ký
@@ -69,7 +69,7 @@ namespace ASM_SIMS.Controllers
                 _dbContext.Accounts.Add(account);
                 await _dbContext.SaveChangesAsync();
 
-                TempData["MessageRegister"] = "Registration successful! Please sign in.";
+                //TempData["MessageRegister"] = "Registration successful! Please sign in.";
                 return RedirectToAction("Index", "Login");
             }
             return View(model);

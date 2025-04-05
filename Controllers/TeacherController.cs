@@ -196,7 +196,7 @@ namespace ASM_SIMS.Controllers
             return View(model);
         }
 
-        // Xử lý xóa giảng viên (xóa mềm)
+        
         [HttpPost]
         public IActionResult Delete(int id)
         {
