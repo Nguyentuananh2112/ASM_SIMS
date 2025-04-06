@@ -1,4 +1,4 @@
-﻿using ASM_SIMS.DB;
+using ASM_SIMS.DB;
 using ASM_SIMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,17 +10,16 @@ namespace ASM_SIMS.Controllers
     {
         private readonly SimsDataContext _dbContext;
 
-        // DIP: Tiêm SimsDataContext qua constructor để giảm phụ thuộc trực tiếp
+        // DIP: Inject SimsDataContext through constructor to reduce direct dependency
         public TeacherController(SimsDataContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        // Hiển thị danh sách giảng viên
+        // Display list of teachers
         public IActionResult Index()
         {
-
-            // kiem tra session
+            // Check session
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
             {
                 return RedirectToAction("Index", "Login");
@@ -28,7 +27,7 @@ namespace ASM_SIMS.Controllers
 
             var teachers = _dbContext.Teachers
                 .Where(t => t.DeletedAt == null)
-                .Include(t => t.Account) // Include Account để lấy thông tin tài khoản nếu cần
+                .Include(t => t.Account) // Include Account to retrieve account info if needed
                 .Select(t => new TeacherViewModel
                 {
                     Id = t.Id,
@@ -45,7 +44,7 @@ namespace ASM_SIMS.Controllers
             return View(teachers);
         }
 
-        // Hiển thị form thêm giảng viên
+        // Display form to add a teacher
         [HttpGet]
         public IActionResult Create()
         {
@@ -57,22 +56,22 @@ namespace ASM_SIMS.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(TeacherViewModel model)
         {
-            // Kiểm tra trùng lặp email
+            // Check for duplicate email
             var existingEmail = _dbContext.Teachers
                 .Any(t => t.Email == model.Email && t.DeletedAt == null);
 
             if (existingEmail)
             {
-                ModelState.AddModelError("Email", "Email đã tồn tại.");
+                ModelState.AddModelError("Email", "Email already exists.");
             }
 
-            // Kiểm tra trùng lặp số điện thoại
+            // Check for duplicate phone number
             var existingPhone = _dbContext.Teachers
                 .Any(t => t.Phone == model.Phone && t.DeletedAt == null);
 
             if (existingPhone)
             {
-                ModelState.AddModelError("Phone", "Số điện thoại đã tồn tại.");
+                ModelState.AddModelError("Phone", "Phone number already exists.");
             }
 
             if (ModelState.IsValid)
@@ -111,14 +110,14 @@ namespace ASM_SIMS.Controllers
                 catch (Exception ex)
                 {
                     TempData["save"] = false;
-                    ModelState.AddModelError("", $"Lỗi khi thêm giảng viên: {ex.Message} | Inner: {ex.InnerException?.Message}");
+                    ModelState.AddModelError("", $"Error while adding teacher: {ex.Message} | Inner: {ex.InnerException?.Message}");
                 }
             }
             ViewBag.Courses = new SelectList(_dbContext.Courses, "Id", "NameCourse");
             return View(model);
         }
 
-        // Hiển thị form sửa giảng viên
+        // Display form to edit teacher
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -135,7 +134,7 @@ namespace ASM_SIMS.Controllers
                 Status = teacher.Status,
                 CourseId = teacher.CourseId
             };
-            ViewBag.Courses = _dbContext.Courses.ToList(); // Truyền List<Courses> thay vì SelectList
+            ViewBag.Courses = _dbContext.Courses.ToList(); // Pass List<Courses> instead of SelectList
             return View(model);
         }
 
@@ -143,22 +142,22 @@ namespace ASM_SIMS.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(TeacherViewModel model)
         {
-            // Kiểm tra trùng lặp email, bỏ qua bản ghi hiện tại
+            // Check for duplicate email, excluding current record
             var existingEmail = _dbContext.Teachers
                 .Any(t => t.Email == model.Email && t.Id != model.Id && t.DeletedAt == null);
 
             if (existingEmail)
             {
-                ModelState.AddModelError("Email", "Email đã tồn tại.");
+                ModelState.AddModelError("Email", "Email already exists.");
             }
 
-            // Kiểm tra trùng lặp số điện thoại, bỏ qua bản ghi hiện tại
+            // Check for duplicate phone number, excluding current record
             var existingPhone = _dbContext.Teachers
                 .Any(t => t.Phone == model.Phone && t.Id != model.Id && t.DeletedAt == null);
 
             if (existingPhone)
             {
-                ModelState.AddModelError("Phone", "Số điện thoại đã tồn tại.");
+                ModelState.AddModelError("Phone", "Phone number already exists.");
             }
 
             if (ModelState.IsValid)
@@ -189,14 +188,14 @@ namespace ASM_SIMS.Controllers
                 catch (Exception ex)
                 {
                     TempData["save"] = false;
-                    ModelState.AddModelError("", $"Lỗi khi sửa giảng viên: {ex.Message} | Inner: {ex.InnerException?.Message}");
+                    ModelState.AddModelError("", $"Error while editing teacher: {ex.Message} | Inner: {ex.InnerException?.Message}");
                 }
             }
-            ViewBag.Courses = _dbContext.Courses.ToList(); // Truyền List<Courses> thay vì SelectList
+            ViewBag.Courses = _dbContext.Courses.ToList(); // Pass List<Courses> instead of SelectList
             return View(model);
         }
 
-        
+        // Handle deleting teacher (soft delete)
         [HttpPost]
         public IActionResult Delete(int id)
         {
@@ -219,7 +218,7 @@ namespace ASM_SIMS.Controllers
             catch (Exception ex)
             {
                 TempData["save"] = false;
-                ModelState.AddModelError("", $"Lỗi khi xóa giảng viênn: {ex.Message}");
+                ModelState.AddModelError("", $"Error while deleting teacher: {ex.Message}");
             }
             return RedirectToAction(nameof(Index));
         }
