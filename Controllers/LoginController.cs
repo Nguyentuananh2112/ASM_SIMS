@@ -51,48 +51,7 @@ namespace ASM_SIMS.Controllers
             return View(model);
         }
 
-        /*// GET: Hiển thị form tạo tài khoản Admin đầu tiên
-        [HttpGet]
-        public IActionResult CreateFirstAdmin()
-        {
-            if (_dbContext.Accounts.Any())
-            {
-                return RedirectToAction("Index"); // Nếu đã có tài khoản, không cho tạo nữa
-            }
-            return View(new RegisterViewModel());
-        }
-
-        // POST: Xử lý tạo tài khoản Admin đầu tiên
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFirstAdmin(RegisterViewModel model)
-        {
-            if (_dbContext.Accounts.Any())
-            {
-                return RedirectToAction("Index"); // Nếu đã có tài khoản, không cho tạo
-            }
-
-            if (ModelState.IsValid)
-            {
-                var account = new Account
-                {
-                    RoleId = 1, // Admin
-                    Username = model.Username,
-                    Password = model.Password,
-                    Email = model.Email,
-                    Phone = model.Phone,
-                    Address = model.Address,
-                    CreatedAt = DateTime.Now
-                };
-
-                _dbContext.Accounts.Add(account);
-                await _dbContext.SaveChangesAsync();
-
-                TempData["MessageLogin"] = "Admin account created successfully! Please sign in.";
-                return RedirectToAction("Index");
-            }
-            return View(model);
-        }*/
+       
 
         // POST: Logout
         [HttpPost]
