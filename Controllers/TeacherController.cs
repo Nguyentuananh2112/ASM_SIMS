@@ -219,7 +219,7 @@ namespace ASM_SIMS.Controllers
             catch (Exception ex)
             {
                 TempData["save"] = false;
-                ModelState.AddModelError("", $"Lỗi khi xóa giảng viên: {ex.Message}");
+                ModelState.AddModelError("", $"Lỗi khi xóa giảng viênn: {ex.Message}");
             }
             return RedirectToAction(nameof(Index));
         }
