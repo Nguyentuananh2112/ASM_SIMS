@@ -52,7 +52,7 @@ namespace ASM_SIMS.Models
         [Range(0, 5, ErrorMessage = "Đánh giá phải từ 0 đến 5")]
         public int Vote { get; set; }
 
-        public bool Status { get; set; }
+        public string Status { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

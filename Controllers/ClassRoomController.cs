@@ -3,7 +3,9 @@ using ASM_SIMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ASM_SIMS.Controllers
 {
@@ -11,25 +13,28 @@ namespace ASM_SIMS.Controllers
     {
         private readonly SimsDataContext _dbContext;
 
-        // Constructor to inject the DbContext
         public ClassRoomController(SimsDataContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        // Index: Show a list of classrooms
-        public IActionResult Index()
+        // Kiểm tra session trong mỗi action
+        private IActionResult CheckSession()
         {
-            // Check for session
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
             {
                 return RedirectToAction("Index", "Login");
             }
+            return null;
+        }
 
-            var classRooms = _dbContext.ClassRooms
-                .Where(c => c.DeletedAt == null)  // Only get active classrooms
-                .Include(c => c.Course)           // Include associated Course data
-                .Include(c => c.Teacher)          // Include associated Teacher data
+        // Lấy danh sách lớp học active
+        private List<ClassRoomViewModel> GetActiveClassRooms()
+        {
+            return _dbContext.ClassRooms
+                .Where(c => c.DeletedAt == null)
+                .Include(c => c.Course)
+                .Include(c => c.Teacher)
                 .Select(c => new ClassRoomViewModel
                 {
                     Id = c.Id,
@@ -44,83 +49,128 @@ namespace ASM_SIMS.Controllers
                     CreatedAt = c.CreatedAt,
                     UpdatedAt = c.UpdatedAt
                 }).ToList();
+        }
 
-            // Assign ViewBag values for Courses and Teachers
-            ViewBag.Courses = _dbContext.Courses
-                .Where(c => c.DeletedAt == null)
-                .ToList();
-            ViewBag.Teachers = _dbContext.Teachers
-                .Where(t => t.DeletedAt == null)
-                .ToList();
+        // Lấy thông tin chi tiết lớp học
+        private ClassRoomViewModel GetClassRoomDetails(int id)
+        {
+            var classRoom = _dbContext.ClassRooms
+                .Include(c => c.Course)
+                .Include(c => c.Teacher)
+                .Include(c => c.Students)
+                .FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
 
+            if (classRoom == null) return null;
+
+            return new ClassRoomViewModel
+            {
+                Id = classRoom.Id,
+                ClassName = classRoom.ClassName ?? string.Empty,
+                CourseId = classRoom.CourseId,
+                TeacherId = classRoom.TeacherId,
+                StartDate = classRoom.StartDate,
+                EndDate = classRoom.EndDate,
+                Schedule = classRoom.Schedule ?? string.Empty,
+                Location = classRoom.Location,
+                Status = classRoom.Status,
+                CreatedAt = classRoom.CreatedAt,
+                UpdatedAt = classRoom.UpdatedAt
+            };
+        }
+
+        // Điền dữ liệu cho ViewBag
+        private void PopulateViewBag()
+        {
+            ViewBag.Courses = _dbContext.Courses.Where(c => c.DeletedAt == null).ToList();
+            ViewBag.Teachers = _dbContext.Teachers.Where(t => t.DeletedAt == null).ToList();
+        }
+
+        // Xử lý lỗi chung
+        private IActionResult HandleError(Exception ex, string actionName, ClassRoomViewModel model = null)
+        {
+            TempData["save"] = false;
+            if (model != null)
+            {
+                ModelState.AddModelError("", $"Error in {actionName}: {ex.Message}");
+                PopulateViewBag();
+                return View(model);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Index()
+        {
+            var sessionCheck = CheckSession();
+            if (sessionCheck != null) return sessionCheck;
+
+            var classRooms = GetActiveClassRooms();
+            PopulateViewBag();
             ViewData["Title"] = "Class Rooms";
             return View(classRooms);
         }
 
-        // GET: Display the create class form
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.Courses = _dbContext.Courses
-                .Where(c => c.DeletedAt == null)
-                .ToList();
-            ViewBag.Teachers = _dbContext.Teachers
-                .Where(t => t.DeletedAt == null)
-                .ToList();
+            var sessionCheck = CheckSession();
+            if (sessionCheck != null) return sessionCheck;
+
+            PopulateViewBag();
             return View(new ClassRoomViewModel());
         }
 
-        // POST: Handle the class creation
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(ClassRoomViewModel model)
         {
-            if (ModelState.IsValid)
+            var sessionCheck = CheckSession();
+            if (sessionCheck != null) return sessionCheck;
+
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    var classRoom = new ClassRoom
-                    {
-                        ClassName = model.ClassName,
-                        CourseId = model.CourseId ?? 0,
-                        TeacherId = model.TeacherId ?? 0,
-                        StartDate = model.StartDate,
-                        EndDate = model.EndDate,
-                        Schedule = model.Schedule,
-                        Location = model.Location,
-                        Status = "Active",
-                        CreatedAt = DateTime.Now
-                    };
-                    _dbContext.ClassRooms.Add(classRoom);
-                    _dbContext.SaveChanges();
-                    TempData["save"] = true;
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    TempData["save"] = false;
-                    ModelState.AddModelError("", $"Error: {ex.Message}");
-                    System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
-                }
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("Validation errors occurred. Check ModelState for details.");
+                PopulateViewBag();
+                return View(model);
             }
 
-            ViewBag.Courses = _dbContext.Courses
-                .Where(c => c.DeletedAt == null)
-                .ToList();
-            ViewBag.Teachers = _dbContext.Teachers
-                .Where(t => t.DeletedAt == null)
-                .ToList();
-            return View(model);
+            try
+            {
+                if (_dbContext.ClassRooms.Any(c => c.ClassName == model.ClassName && c.DeletedAt == null))
+                {
+                    ModelState.AddModelError("ClassName", "Class name already exists.");
+                    PopulateViewBag();
+                    return View(model);
+                }
+
+                var classRoom = new ClassRoom
+                {
+                    ClassName = model.ClassName,
+                    CourseId = model.CourseId!.Value,
+                    TeacherId = model.TeacherId!.Value,
+                    StartDate = model.StartDate,
+                    EndDate = model.EndDate,
+                    Schedule = model.Schedule,
+                    Location = model.Location,
+                    Status = model.Status,
+                    CreatedAt = DateTime.Now,
+                    Students = new List<Student>()
+                };
+                _dbContext.ClassRooms.Add(classRoom);
+                _dbContext.SaveChanges();
+                TempData["save"] = true;
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                return HandleError(ex, "Create", model);
+            }
         }
 
-        // GET: Display the edit form for class
         [HttpGet]
         public IActionResult Edit(int id)
         {
+            var sessionCheck = CheckSession();
+            if (sessionCheck != null) return sessionCheck;
+
             var classRoom = _dbContext.ClassRooms.Find(id);
             if (classRoom == null || classRoom.DeletedAt != null) return NotFound();
 
@@ -132,73 +182,70 @@ namespace ASM_SIMS.Controllers
                 TeacherId = classRoom.TeacherId,
                 StartDate = classRoom.StartDate,
                 EndDate = classRoom.EndDate,
+                Schedule = classRoom.Schedule,
                 Location = classRoom.Location,
                 Status = classRoom.Status
             };
-            ViewBag.Courses = _dbContext.Courses.ToList();
-            ViewBag.Teachers = _dbContext.Teachers.ToList();
+            PopulateViewBag();
             return View(model);
         }
 
-        // POST: Handle the edit form submission
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(ClassRoomViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var classRoom = _dbContext.ClassRooms.FirstOrDefault(c => c.Id == model.Id);
-                    if (classRoom == null)
-                    {
-                        TempData["save"] = false;
-                        return RedirectToAction(nameof(Index));
-                    }
+            var sessionCheck = CheckSession();
+            if (sessionCheck != null) return sessionCheck;
 
-                    // Update fields
-                    classRoom.ClassName = model.ClassName;
-                    classRoom.CourseId = model.CourseId ?? 0;
-                    classRoom.TeacherId = model.TeacherId ?? 0;
-                    classRoom.StartDate = model.StartDate;
-                    classRoom.EndDate = model.EndDate;
-                    classRoom.Schedule = model.Schedule;
-                    classRoom.Location = model.Location;
-                    classRoom.Status = model.Status;
-                    classRoom.UpdatedAt = DateTime.Now;
-
-                    _dbContext.SaveChanges();
-                    TempData["save"] = true;
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    TempData["save"] = false;
-                    ModelState.AddModelError("", $"Error: {ex.Message}");
-                    System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
-                }
-            }
-            else
+            if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                ModelState.AddModelError("", "Validation errors: " + string.Join(", ", errors));
-                System.Diagnostics.Debug.WriteLine("Validation errors: " + string.Join(", ", errors));
+                PopulateViewBag();
+                return View(model);
             }
 
-            ViewBag.Courses = _dbContext.Courses
-                .Where(c => c.DeletedAt == null)
-                .ToList();
-            ViewBag.Teachers = _dbContext.Teachers
-                .Where(t => t.DeletedAt == null)
-                .ToList();
-            return View(model);
+            try
+            {
+                if (_dbContext.ClassRooms.Any(c => c.ClassName == model.ClassName && c.Id != model.Id && c.DeletedAt == null))
+                {
+                    ModelState.AddModelError("ClassName", "Class name already exists.");
+                    PopulateViewBag();
+                    return View(model);
+                }
+
+                var classRoom = _dbContext.ClassRooms
+                    .Include(c => c.Students)
+                    .FirstOrDefault(c => c.Id == model.Id && c.DeletedAt == null);
+
+                if (classRoom == null) return NotFound();
+
+                classRoom.ClassName = model.ClassName;
+                classRoom.CourseId = model.CourseId!.Value;
+                classRoom.TeacherId = model.TeacherId!.Value;
+                classRoom.StartDate = model.StartDate;
+                classRoom.EndDate = model.EndDate;
+                classRoom.Schedule = model.Schedule;
+                classRoom.Location = model.Location;
+                classRoom.Status = model.Status;
+                classRoom.UpdatedAt = DateTime.Now;
+
+                _dbContext.ClassRooms.Update(classRoom);
+                _dbContext.SaveChanges();
+                TempData["save"] = true;
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                return HandleError(ex, "Edit", model);
+            }
         }
 
-        // POST: Handle the delete class
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
+            var sessionCheck = CheckSession();
+            if (sessionCheck != null) return sessionCheck;
+
             try
             {
                 var classRoom = _dbContext.ClassRooms.FirstOrDefault(c => c.Id == id);
@@ -214,23 +261,20 @@ namespace ASM_SIMS.Controllers
             }
             catch (Exception ex)
             {
-                TempData["save"] = false;
-                System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
+                return HandleError(ex, "Delete");
             }
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Add students to the class
         [HttpGet]
         public IActionResult AddStudentToClass(int classRoomId)
         {
-            var classRoom = _dbContext.ClassRooms.FirstOrDefault(c => c.Id == classRoomId && c.DeletedAt == null);
-            if (classRoom == null)
-            {
-                return NotFound();
-            }
+            var sessionCheck = CheckSession();
+            if (sessionCheck != null) return sessionCheck;
 
-            // Ensure Students are included in the query and filter properly
+            var classRoom = _dbContext.ClassRooms.FirstOrDefault(c => c.Id == classRoomId && c.DeletedAt == null);
+            if (classRoom == null) return NotFound();
+
             var students = _dbContext.Students
                 .Where(s => s.DeletedAt == null && (s.ClassRoomId == null || s.ClassRoomId == classRoomId))
                 .Select(s => new StudentViewModel
@@ -240,43 +284,40 @@ namespace ASM_SIMS.Controllers
                     Email = s.Email ?? string.Empty,
                     Phone = s.Phone ?? string.Empty,
                     Address = s.Address,
-                    Status = s.Status ?? string.Empty,
+                    Status = s.Status,
                     ClassRoomId = s.ClassRoomId,
                     CourseId = s.CourseId,
                     AccountId = s.AccountId,
-                    IsSelected = s.ClassRoomId.HasValue && s.ClassRoomId == classRoomId // Selected if belongs to this class
+                    IsSelected = s.ClassRoomId.HasValue && s.ClassRoomId == classRoomId
                 }).ToList();
 
             var model = new AssignStudentsViewModel
             {
                 ClassRoomId = classRoomId,
-                ClassRoomName = classRoom?.ClassName ?? "N/A",
+                ClassRoomName = classRoom.ClassName ?? "N/A",
                 Students = students
             };
 
             return View(model);
         }
 
-        // POST: Assign selected students to the class
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddStudentToClass(AssignStudentsViewModel model)
         {
+            var sessionCheck = CheckSession();
+            if (sessionCheck != null) return sessionCheck;
+
             var classRoom = _dbContext.ClassRooms.FirstOrDefault(c => c.Id == model.ClassRoomId && c.DeletedAt == null);
-            if (classRoom == null)
-            {
-                return NotFound();
-            }
+            if (classRoom == null) return NotFound();
 
             try
             {
-                // Get selected student IDs
                 var selectedStudentIds = model.Students
                     .Where(s => s.IsSelected)
                     .Select(s => s.Id)
                     .ToList();
 
-                // Update ClassRoomId for selected students
                 var studentsToAdd = _dbContext.Students
                     .Where(s => selectedStudentIds.Contains(s.Id))
                     .ToList();
@@ -285,7 +326,6 @@ namespace ASM_SIMS.Controllers
                     student.ClassRoomId = model.ClassRoomId;
                 }
 
-                // Remove ClassRoomId for unselected students
                 var unselectedStudentIds = model.Students
                     .Where(s => !s.IsSelected)
                     .Select(s => s.Id)
@@ -304,64 +344,41 @@ namespace ASM_SIMS.Controllers
             }
             catch (Exception ex)
             {
-                TempData["save"] = false;
                 ModelState.AddModelError("", $"Error: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
+                TempData["save"] = false;
+
+                model.Students = _dbContext.Students
+                    .Where(s => s.DeletedAt == null && (s.ClassRoomId == null || s.ClassRoomId == model.ClassRoomId))
+                    .Select(s => new StudentViewModel
+                    {
+                        Id = s.Id,
+                        FullName = s.FullName ?? string.Empty,
+                        Email = s.Email ?? string.Empty,
+                        Phone = s.Phone ?? string.Empty,
+                        Address = s.Address,
+                        Status = s.Status,
+                        ClassRoomId = s.ClassRoomId,
+                        CourseId = s.CourseId,
+                        AccountId = s.AccountId,
+                        IsSelected = model.Students.Any(m => m.Id == s.Id && m.IsSelected)
+                    }).ToList();
+
+                model.ClassRoomName = classRoom.ClassName ?? "N/A";
+                return View(model);
             }
-
-            // Reload students and display them again
-            model.Students = _dbContext.Students
-                .Where(s => s.DeletedAt == null && (s.ClassRoomId == null || s.ClassRoomId == model.ClassRoomId))
-                .Select(s => new StudentViewModel
-                {
-                    Id = s.Id,
-                    FullName = s.FullName ?? string.Empty,
-                    Email = s.Email ?? string.Empty,
-                    Phone = s.Phone ?? string.Empty,
-                    Address = s.Address,
-                    Status = s.Status ?? string.Empty,
-                    ClassRoomId = s.ClassRoomId,
-                    CourseId = s.CourseId,
-                    AccountId = s.AccountId,
-                    IsSelected = model.Students.Any(m => m.Id == s.Id && m.IsSelected)
-                }).ToList();
-
-            model.ClassRoomName = classRoom?.ClassName ?? "N/A";
-            return View(model);
         }
 
-        // Details: Show class information and student list
         [HttpGet]
         public IActionResult Details(int id)
         {
-            var classRoom = _dbContext.ClassRooms
-                .Include(c => c.Course)
-                .Include(c => c.Teacher)
-                .Include(c => c.Students)
-                .FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
+            var sessionCheck = CheckSession();
+            if (sessionCheck != null) return sessionCheck;
 
-            if (classRoom == null)
-            {
-                return NotFound();
-            }
+            var model = GetClassRoomDetails(id);
+            if (model == null) return NotFound();
 
-            var model = new ClassRoomViewModel
-            {
-                Id = classRoom.Id,
-                ClassName = classRoom.ClassName ?? string.Empty,
-                CourseId = classRoom.CourseId,
-                TeacherId = classRoom.TeacherId,
-                StartDate = classRoom.StartDate,
-                EndDate = classRoom.EndDate,
-                Schedule = classRoom.Schedule ?? string.Empty,
-                Location = classRoom.Location,
-                Status = classRoom.Status ?? string.Empty,
-                CreatedAt = classRoom.CreatedAt,
-                UpdatedAt = classRoom.UpdatedAt
-            };
-
-            ViewBag.Students = classRoom.Students?
-                .Where(s => s.DeletedAt == null)
+            ViewBag.Students = _dbContext.Students
+                .Where(s => s.ClassRoomId == id && s.DeletedAt == null)
                 .Select(s => new StudentViewModel
                 {
                     Id = s.Id,
@@ -369,14 +386,14 @@ namespace ASM_SIMS.Controllers
                     Email = s.Email ?? string.Empty,
                     Phone = s.Phone ?? string.Empty,
                     Address = s.Address,
-                    Status = s.Status ?? string.Empty,
+                    Status = s.Status,
                     ClassRoomId = s.ClassRoomId,
                     CourseId = s.CourseId,
                     AccountId = s.AccountId
-                }).ToList() ?? new List<StudentViewModel>();
+                }).ToList();
 
-            ViewBag.CourseName = classRoom.Course?.NameCourse ?? "N/A";
-            ViewBag.TeacherName = classRoom.Teacher?.FullName ?? "N/A";
+            ViewBag.CourseName = _dbContext.Courses.Find(model.CourseId)?.NameCourse ?? "N/A";
+            ViewBag.TeacherName = _dbContext.Teachers.Find(model.TeacherId)?.FullName ?? "N/A";
             return View(model);
         }
     }

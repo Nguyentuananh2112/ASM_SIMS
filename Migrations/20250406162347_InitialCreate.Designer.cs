@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASM_SIMS.Migrations
 {
     [DbContext(typeof(SimsDataContext))]
-    [Migration("20250404123707_InitialCreate")]
+    [Migration("20250406162347_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

@@ -8,6 +8,7 @@ namespace ASM_SIMS.DB
     {
         [AllowNull]
         public DateTime? CreatedAt { get; set; }
+
         [Key]
         public int Id { get; set; }
 
@@ -26,23 +27,19 @@ namespace ASM_SIMS.DB
         [Column("EndDate"), Required]
         public DateOnly EndDate { get; set; }
 
-
         [Column("Vote", TypeName = "Integer"), Required]
         public int Vote { get; set; }
 
         [Column("Status", TypeName = "Varchar(20)"), Required]
-        public bool Status { get; set; }
+        public string Status { get; set; } 
 
         [AllowNull]
         public DateTime? UpdatedAt { get; set; }
 
         [AllowNull]
         public DateTime? DeletedAt { get; set; }
-        // Thuộc tính điều hướng cần có
-        public Categories Category { get; set; } // Đảm bảo có dòng này
 
-
-
-
+        // Thuộc tính điều hướng
+        public Categories Category { get; set; }
     }
 }

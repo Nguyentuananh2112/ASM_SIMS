@@ -24,7 +24,7 @@ namespace ASM_SIMS.DB
         public string Phone { get; set; }
 
         [Column("Address", TypeName = "Varchar(150)")]
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         [Column("Status", TypeName = "Varchar(20)"), Required]
         public string Status { get; set; }

@@ -4,7 +4,6 @@ using ASM_SIMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace ASM_SIMS.Controllers
 {
     public class CoursesController : Controller
@@ -35,9 +34,9 @@ namespace ASM_SIMS.Controllers
                             CategoryId = course.CategoryId,
                             CategoryName = category.NameCategory,
                             StartDate = course.StartDate,
-                            EndDate = course.EndDate, // Không cần gán mặc định vì Required
-                            Vote = course.Vote, // Không cần gán mặc định vì Required
-                            Status = course.Status,
+                            EndDate = course.EndDate,
+                            Vote = course.Vote,
+                            Status = course.Status, // Status giờ là string
                             CreatedAt = course.CreatedAt,
                             UpdatedAt = course.UpdatedAt
                         })
@@ -55,8 +54,8 @@ namespace ASM_SIMS.Controllers
             return View(new CourseDetail
             {
                 StartDate = DateOnly.FromDateTime(DateTime.Now),
-                EndDate = DateOnly.FromDateTime(DateTime.Now), // Gán mặc định vì Required
-                Vote = 0 // Gán mặc định vì Required
+                EndDate = DateOnly.FromDateTime(DateTime.Now),
+                Vote = 0
             });
         }
 
@@ -83,11 +82,11 @@ namespace ASM_SIMS.Controllers
                     {
                         NameCourse = model.NameCourse,
                         Description = model.Description,
-                        CategoryId = category.Id, // Gán CategoryId từ category tìm được
+                        CategoryId = category.Id,
                         StartDate = model.StartDate,
                         EndDate = model.EndDate,
                         Vote = model.Vote,
-                        Status = model.Status,
+                        Status = model.Status, // Status giờ là string
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
                         DeletedAt = null
@@ -125,9 +124,9 @@ namespace ASM_SIMS.Controllers
                 CategoryId = course.CategoryId,
                 CategoryName = course.Category?.NameCategory,
                 StartDate = course.StartDate,
-                EndDate = course.EndDate, // Required trong DB
-                Vote = course.Vote, // Required trong DB
-                Status = course.Status,
+                EndDate = course.EndDate,
+                Vote = course.Vote,
+                Status = course.Status, // Status giờ là string
                 CreatedAt = course.CreatedAt,
                 UpdatedAt = course.UpdatedAt
             };
@@ -161,11 +160,11 @@ namespace ASM_SIMS.Controllers
 
                     course.NameCourse = model.NameCourse;
                     course.Description = model.Description;
-                    course.CategoryId = category.Id; // Gán CategoryId từ category tìm được
+                    course.CategoryId = category.Id;
                     course.StartDate = model.StartDate;
                     course.EndDate = model.EndDate;
                     course.Vote = model.Vote;
-                    course.Status = model.Status;
+                    course.Status = model.Status; // Status giờ là string
                     course.UpdatedAt = DateTime.Now;
 
                     _dbContext.Courses.Update(course);
