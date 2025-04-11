@@ -5,7 +5,7 @@ VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASM_SIMS", "ASM_SIMS.csproj", "{9A38E48A-42BB-44CC-A68F-EF21AA2101AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIMS.Tests", "..\SIMS.Tests\SIMS.Tests.csproj", "{5CC72E16-7F9A-4F49-9B7F-63158A8CCB6B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject1", "..\TestProject1\TestProject1.csproj", "{6106B7D2-15E6-4B49-9ABD-3CF8A2FFFBCD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,12 +17,15 @@ Global
 		{9A38E48A-42BB-44CC-A68F-EF21AA2101AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A38E48A-42BB-44CC-A68F-EF21AA2101AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A38E48A-42BB-44CC-A68F-EF21AA2101AE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5CC72E16-7F9A-4F49-9B7F-63158A8CCB6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5CC72E16-7F9A-4F49-9B7F-63158A8CCB6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5CC72E16-7F9A-4F49-9B7F-63158A8CCB6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5CC72E16-7F9A-4F49-9B7F-63158A8CCB6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6106B7D2-15E6-4B49-9ABD-3CF8A2FFFBCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6106B7D2-15E6-4B49-9ABD-3CF8A2FFFBCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6106B7D2-15E6-4B49-9ABD-3CF8A2FFFBCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6106B7D2-15E6-4B49-9ABD-3CF8A2FFFBCD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E4911A8D-5E70-47AA-9193-5DCBEA739046}
 	EndGlobalSection
 EndGlobal
