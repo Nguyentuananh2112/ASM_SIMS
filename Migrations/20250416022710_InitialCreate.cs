@@ -91,6 +91,7 @@ namespace ASM_SIMS.Migrations
                     Email = table.Column<string>(type: "Varchar(100)", nullable: false),
                     Phone = table.Column<string>(type: "Varchar(20)", nullable: false),
                     Address = table.Column<string>(type: "Varchar(150)", nullable: false),
+                    Image = table.Column<string>(type: "Varchar(150)", nullable: true),
                     Status = table.Column<string>(type: "Varchar(20)", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -119,7 +120,7 @@ namespace ASM_SIMS.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CourseId = table.Column<int>(type: "int", nullable: false),
-                    TeacherId = table.Column<int>(type: "int", nullable: false),
+                    TeacherId = table.Column<int>(type: "int", nullable: true),
                     ClassName = table.Column<string>(type: "Varchar(60)", nullable: false),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: false),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: false),
@@ -143,8 +144,7 @@ namespace ASM_SIMS.Migrations
                         name: "FK_ClassRooms_Teachers_TeacherId",
                         column: x => x.TeacherId,
                         principalTable: "Teachers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -186,6 +186,30 @@ namespace ASM_SIMS.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "TeacherClassRooms",
+                columns: table => new
+                {
+                    ClassRoomsId = table.Column<int>(type: "int", nullable: false),
+                    TeachersId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TeacherClassRooms", x => new { x.ClassRoomsId, x.TeachersId });
+                    table.ForeignKey(
+                        name: "FK_TeacherClassRooms_ClassRooms_ClassRoomsId",
+                        column: x => x.ClassRoomsId,
+                        principalTable: "ClassRooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TeacherClassRooms_Teachers_TeachersId",
+                        column: x => x.TeachersId,
+                        principalTable: "Teachers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_ClassRooms_CourseId",
                 table: "ClassRooms",
@@ -217,6 +241,11 @@ namespace ASM_SIMS.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TeacherClassRooms_TeachersId",
+                table: "TeacherClassRooms",
+                column: "TeachersId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Teachers_AccountId",
                 table: "Teachers",
                 column: "AccountId");
@@ -232,6 +261,9 @@ namespace ASM_SIMS.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Students");
+
+            migrationBuilder.DropTable(
+                name: "TeacherClassRooms");
 
             migrationBuilder.DropTable(
                 name: "ClassRooms");

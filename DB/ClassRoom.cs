@@ -13,7 +13,7 @@ namespace ASM_SIMS.DB
             public int CourseId { get; set; }
 
             [ForeignKey("TeacherId")]
-            public int TeacherId { get; set; } // Không nullable vì ClassRoom phải có Teacher
+            public int? TeacherId { get; set; } // Sửa thành nullable để có thể không có giáo viên chính
 
             [Column("ClassName", TypeName = "Varchar(60)"), Required]
             public string ClassName { get; set; } = string.Empty; // Khởi tạo mặc định
@@ -39,7 +39,12 @@ namespace ASM_SIMS.DB
 
             // Quan hệ điều hướng
             public Courses Course { get; set; } = null!; // Khởi tạo để tránh CS8618
-            public Teacher Teacher { get; set; } = null!; // Khởi tạo để tránh CS8618
+            
+            // Quan hệ với Teacher chính của lớp
+            public Teacher? Teacher { get; set; }
+            
+            // Quan hệ nhiều-nhiều với tất cả giáo viên dạy trong lớp
+            public virtual ICollection<Teacher> Teachers { get; set; } = new List<Teacher>();
             public virtual ICollection<Student> Students { get; set; } = new List<Student>();
     }
 }

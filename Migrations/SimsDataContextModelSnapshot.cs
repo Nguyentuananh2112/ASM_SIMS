@@ -156,7 +156,7 @@ namespace ASM_SIMS.Migrations
                         .HasColumnType("Varchar(20)")
                         .HasColumnName("Status");
 
-                    b.Property<int>("TeacherId")
+                    b.Property<int?>("TeacherId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -321,6 +321,10 @@ namespace ASM_SIMS.Migrations
                         .HasColumnType("Varchar(100)")
                         .HasColumnName("FullName");
 
+                    b.Property<string>("Image")
+                        .HasColumnType("Varchar(150)")
+                        .HasColumnName("Image");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("Varchar(20)")
@@ -343,6 +347,21 @@ namespace ASM_SIMS.Migrations
                     b.ToTable("Teachers");
                 });
 
+            modelBuilder.Entity("ClassRoomTeacher", b =>
+                {
+                    b.Property<int>("ClassRoomsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeachersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ClassRoomsId", "TeachersId");
+
+                    b.HasIndex("TeachersId");
+
+                    b.ToTable("TeacherClassRooms", (string)null);
+                });
+
             modelBuilder.Entity("ASM_SIMS.DB.ClassRoom", b =>
                 {
                     b.HasOne("ASM_SIMS.DB.Courses", "Course")
@@ -353,9 +372,7 @@ namespace ASM_SIMS.Migrations
 
                     b.HasOne("ASM_SIMS.DB.Teacher", "Teacher")
                         .WithMany()
-                        .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TeacherId");
 
                     b.Navigation("Course");
 
@@ -411,6 +428,21 @@ namespace ASM_SIMS.Migrations
                     b.Navigation("Account");
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("ClassRoomTeacher", b =>
+                {
+                    b.HasOne("ASM_SIMS.DB.ClassRoom", null)
+                        .WithMany()
+                        .HasForeignKey("ClassRoomsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ASM_SIMS.DB.Teacher", null)
+                        .WithMany()
+                        .HasForeignKey("TeachersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ASM_SIMS.DB.Account", b =>

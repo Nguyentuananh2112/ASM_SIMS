@@ -29,7 +29,7 @@ namespace ASM_SIMS.Controllers
             var classRooms = _dbContext.ClassRooms
                 .Where(c => c.DeletedAt == null)  // Only get active classrooms
                 .Include(c => c.Course)           // Include associated Course data
-                .Include(c => c.Teacher)          // Include associated Teacher data
+                //.Include(c => c.Teacher)          // Include associated Teacher data
                 .Select(c => new ClassRoomViewModel
                 {
                     Id = c.Id,
@@ -159,7 +159,7 @@ namespace ASM_SIMS.Controllers
                     // Update fields
                     classRoom.ClassName = model.ClassName;
                     classRoom.CourseId = model.CourseId ?? 0;
-                    classRoom.TeacherId = model.TeacherId ?? 0;
+                    //classRoom.TeacherId = model.TeacherId ?? 0;
                     classRoom.StartDate = model.StartDate;
                     classRoom.EndDate = model.EndDate;
                     classRoom.Schedule = model.Schedule;
@@ -336,7 +336,7 @@ namespace ASM_SIMS.Controllers
         {
             var classRoom = _dbContext.ClassRooms
                 .Include(c => c.Course)
-                .Include(c => c.Teacher)
+                //.Include(c => c.Teacher)
                 .Include(c => c.Students)
                 .FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
 

@@ -19,7 +19,7 @@ namespace ASM_SIMS.DB
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-// Cấu hình quan hệ giữa Student và Account
+            // Cấu hình quan hệ giữa Student và Account
             modelBuilder.Entity<Student>()
                 .HasOne(s => s.Account)
                 .WithMany(a => a.Students)
@@ -37,7 +37,18 @@ namespace ASM_SIMS.DB
                 .WithMany()
                 .HasForeignKey(s => s.CourseId);
 
-            
+            // Cấu hình quan hệ một-nhiều giữa Teacher và ClassRoom (Teacher chính)
+            modelBuilder.Entity<ClassRoom>()
+                .HasOne(c => c.Teacher)
+                .WithMany()
+                .HasForeignKey(c => c.TeacherId)
+                .IsRequired(false); // TeacherId có thể null
+
+            // Cấu hình quan hệ nhiều-nhiều giữa Teacher và ClassRoom
+            modelBuilder.Entity<Teacher>()
+                .HasMany(t => t.ClassRooms)
+                .WithMany(c => c.Teachers)
+                .UsingEntity(j => j.ToTable("TeacherClassRooms"));
         }
     }
 }

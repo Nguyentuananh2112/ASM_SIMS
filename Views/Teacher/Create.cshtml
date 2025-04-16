@@ -1,60 +1,102 @@
 ﻿@model ASM_SIMS.Models.TeacherViewModel
+@using ASM_SIMS.DB
 @{
     ViewData["Title"] = "Create Teacher";
     Layout = "~/Views/Shared/_MainLayout.cshtml";
+    var courses = ViewBag.Courses as List<Courses>;
+    var classRooms = ViewBag.ClassRooms as List<ClassRoom>;
 }
 
-<div class="row">
-    <div class="col-sm-12 col-md-12">
-        <h2>Add New Teacher</h2>
-        <a class="btn btn-info" asp-action="Index">Back</a>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0">Add New Teacher</h2>
+                <a class="btn btn-secondary" asp-action="Index"><i class="bi bi-arrow-left"></i> Back</a>
+            </div>
 
-        <div class="card mt-3">
-            <div class="card-body">
-                <form method="post" asp-action="Create">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()) || (TempData["Error"] != null))
+            {
+                <div class="alert alert-danger">
+                    @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+                    {
+                        foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <div>@error.ErrorMessage</div>
+                        }
+                    }
+                    else if (TempData["Error"] != null)
+                    {
+                        <div>@TempData["Error"]</div>
+                    }
+                </div>
+            }
 
-                    <div class="mb-3">
-                        <label asp-for="FullName" class="form-label">Full Name</label>
-                        <input asp-for="FullName" class="form-control" />
-                        <span asp-validation-for="FullName" class="text-danger"></span>
-                    </div>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="post" asp-action="Create" enctype="multipart/form-data" novalidate>
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label">Full Name</label>
+                            <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label">Email</label>
-                        <input asp-for="Email" class="form-control" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Email</label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Phone" class="form-label">Phone Number</label>
-                        <input asp-for="Phone" class="form-control" />
-                        <span asp-validation-for="Phone" class="text-danger"></span>
-                    </div>
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label">Phone Number</label>
+                            <input asp-for="Phone" class="form-control" />
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Address" class="form-label">Address</label>
-                        <input asp-for="Address" class="form-control" />
-                        <span asp-validation-for="Address" class="text-danger"></span>
-                    </div>
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">Address</label>
+                            <input asp-for="Address" class="form-control" />
+                            <span asp-validation-for="Address" class="text-danger small"></span>
+                        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="CourseId" class="form-label">Course</label>
-                        <select asp-for="CourseId" class="form-control" asp-items="ViewBag.Courses"></select>
-                        <span asp-validation-for="CourseId" class="text-danger"></span>
-                    </div>
+                        <div class="mb-3">
+                            <label asp-for="CourseId" class="form-label">Course</label>
+                            <select asp-for="CourseId" class="form-select" asp-items="@(new SelectList(courses, "Id", "NameCourse"))">
+                                <option value="">-- Select Course --</option>
+                            </select>
+                            <span asp-validation-for="CourseId" class="text-danger small"></span>
+                        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Status" class="form-label">Status</label>
-                        <select asp-for="Status" class="form-control">
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
-                        <span asp-validation-for="Status" class="text-danger"></span>
-                    </div>
+                        <div class="mb-3">
+                            <label asp-for="SelectedClassRoomId" class="form-label">Class Room</label>
+                            <select asp-for="SelectedClassRoomId" class="form-select" asp-items="@(new SelectList(classRooms, "Id", "ClassName"))">
+                                <option value="">-- Select Class Room --</option>
+                            </select>
+                            <small class="form-text text-muted">Chọn lớp học cho giáo viên. Lưu ý: Hai giáo viên không thể dạy cùng một môn học trong cùng một lớp.</small>
+                            <span asp-validation-for="SelectedClassRoomId" class="text-danger small"></span>
+                        </div>
 
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </form>
+                        <div class="mb-3">
+                            <label asp-for="ViewImage" class="form-label">Image</label>
+                            <input asp-for="ViewImage" class="form-control" type="file" accept="image/*" />
+                            <span asp-validation-for="ViewImage" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label">Status</label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="">-- Select Status --</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

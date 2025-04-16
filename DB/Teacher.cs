@@ -26,6 +26,9 @@ namespace ASM_SIMS.DB
         [Column("Address", TypeName = "Varchar(150)")]
         public string Address { get; set; }
 
+        [Column("Image", TypeName = "Varchar(150)")]
+        public string? Image { get; set; }
+
         [Column("Status", TypeName = "Varchar(20)"), Required]
         public string Status { get; set; }
 
@@ -35,6 +38,6 @@ namespace ASM_SIMS.DB
 
         public Account Account { get; set; }
         public Courses Course { get; set; }
-
+        public virtual ICollection<ClassRoom> ClassRooms { get; set; } = new List<ClassRoom>();
     }
 }
